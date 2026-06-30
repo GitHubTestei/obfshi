@@ -13,8 +13,12 @@ local LocalPlayer = Players.LocalPlayer
 local FRIEND_COLOR = Color3.fromRGB(255, 255, 255)
 local TARGET_COLOR = Color3.fromRGB(0, 0, 0)
 
+-- ────────────────────────────────────────────────
+--  VIVID HIGH-CONTRAST NEON RAINBOW CALCULATOR
+-- ────────────────────────────────────────────────
 local rainbowPhase = 0
 local function getAccent()
+    -- Saturation set to 1 and Brightness set to 1 for solid, vivid neon colors
     return Color3.fromHSV(rainbowPhase, 1, 1)
 end
 
@@ -251,7 +255,8 @@ end
 
 local function arc_forceEndRagdoll(char)
     local hum = char:FindFirstChildOfClass("Humanoid")
-    if hum then hum.PlatformStand = false; hum:ChangeState(Enum.HumanoidStateType.GettingUp) end
+    if hum then hum.PlatformStand = false;
+        hum:ChangeState(Enum.HumanoidStateType.GettingUp) end
     for _, o in char:GetDescendants() do if o:IsA("Motor6D") then o.Enabled = true end end
 end
 
@@ -277,14 +282,15 @@ local function arc_onCharacter(char)
                 if not _arc_returnTask then
                     _arc_inReturn = true
                     local saved = _arc_origCF
-          
+                    
                     arc_spawnPlatform(_arc_safeCFrame.Position)
                     hrp.CFrame = _arc_safeCFrame
                     
                     -- Changed to instant teleport back instead of delaying for 3 seconds
                     arc_removePlatform()
                     if hrp.Parent and saved then hrp.CFrame = saved end
-                    _arc_origCF = nil; _arc_returnTask = nil; _arc_inReturn = false; _arc_wasGrabbed = false; _arc_cleaned = false
+                    _arc_origCF = nil;
+                    _arc_returnTask = nil; _arc_inReturn = false; _arc_wasGrabbed = false; _arc_cleaned = false
                 end
             else
                 hrp.CFrame = _arc_safeCFrame
@@ -294,8 +300,8 @@ local function arc_onCharacter(char)
             if not _arc_wasGrabbed and _arc_origCF and not _arc_returnTask then
                 _arc_inReturn = true
                 local saved = _arc_origCF
-                _arc_returnTask = task.delay(0, function()
-                     if hrp.Parent and saved then hrp.CFrame = saved end
+                _arc_returnTask = task.delay(0.1, function()
+                    if hrp.Parent and saved then hrp.CFrame = saved end
                     _arc_origCF = nil; _arc_returnTask = nil; _arc_inReturn = false; _arc_wasGrabbed = false; _arc_cleaned = false
                 end)
             end
@@ -428,7 +434,7 @@ rainbowNameRemote = rainbowNameRemote and rainbowNameRemote:FindFirstChild("SetR
 
 local rnHue = 0
 local rnLastUpdate = 0
-local rnSpeed = 1.0
+local rnSpeed = 0.67
 local rnUpdateRate = 0.02
 
 RunService.Heartbeat:Connect(function(dt)
@@ -437,8 +443,9 @@ RunService.Heartbeat:Connect(function(dt)
     rnHue = (rnHue + (dt * rnSpeed)) % 1
     local now = os.clock()
     if now - rnLastUpdate >= rnUpdateRate then
-        local pastelColor = Color3.fromHSV(rnHue, 0.4, 1)
-        pcall(function() rainbowNameRemote:FireServer(pastelColor) end)
+        -- Updated to force maximum vivid saturation (1) instead of pastel (0.4)
+        local neonRainbowColor = Color3.fromHSV(rnHue, 1, 1)
+        pcall(function() rainbowNameRemote:FireServer(neonRainbowColor) end)
         rnLastUpdate = now
     end
 end)
@@ -528,8 +535,7 @@ RunService.Heartbeat:Connect(function()
             local c = p.Character
             if c and c:FindFirstChild("HumanoidRootPart") and c:FindFirstChild("Humanoid") and c.Humanoid.Health > 0 then
                 local d = (c.HumanoidRootPart.Position - char.HumanoidRootPart.Position).Magnitude
-                if d < dist then dist = d;
-                closest = c end
+                if d < dist then dist = d; closest = c end
             end
         end
         if closest then
@@ -795,7 +801,7 @@ CreateFeature("AntiRag",            145)
 CreateFeature("DeathTP",            190)
 CreateFeature("GrabSpam",           235)
 CreateFeature("Hidden",             280)
-CreateFeature("- Extra Clip",        325)
+CreateFeature("- Extra Clip",       325)
 CreateFeature("RainbowName",        370)
 CreateFeature("AntiVoid",           415)
 CreateFeature("NoSlowdown",         460)
@@ -871,6 +877,7 @@ MainFrame.InputBegan:Connect(function(input)
         end)
     end
 end)
+
 UserInputService.InputChanged:Connect(function(input)
     if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
         local delta = input.Position - dragStart
@@ -883,7 +890,6 @@ end)
 -- ────────────────────────────────────────────────
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if gameProcessed then return end
-
     if input.KeyCode == Enum.KeyCode.LeftControl then
         MainFrame.Visible = not MainFrame.Visible
         TweenService:Create(Trigger, TweenInfo.new(0.3), { Rotation = MainFrame.Visible and 45 or 0 }):Play()
